@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# Converts a folder of FLAC files to ALAC files with ffmpeg
+
+usage() { 
+    echo "Usage: ./flac-to-alac -i infolder -o outfolder"
+}
+
+while getopts i:o: flag; do
+    case "${flag}" in
+        i) input="${OPTARG}" ;;
+        o) output="${OPTARG}" ;;
+        h) usage; exit ;;
+    esac
+done
+
+if ((OPTIND == 1))
+then
+    echo "Must specify input and output folders"
+    usage
+    exit 1
+fi
+
+convert() {
+    filename=$(basename $1)
+    filename="${filename%.*}"
+    
+    nq ffmpeg \
+        -nostdin \
+        -i "${input}/$filename.flac" \
+        -c:v copy \
+        -c:a alac \
+        -movflags +faststart \
+        "${output}/$filename.m4a"
+}
+
+find $input -name '*.flac' -print0 | 
+while IFS= read -r -d '' line; do 
+    convert "$line"
+done
+
+fq

@@ -1,0 +1,2 @@
+brew "nq"
+brew "ffmpeg"
