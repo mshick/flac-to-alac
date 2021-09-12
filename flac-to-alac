@@ -2,6 +2,10 @@
 #
 # Converts a folder of FLAC files to ALAC files with ffmpeg
 
+if [ "$lidarr_eventtype" = "Test" ]
+  exit 0
+end
+
 usage() { 
     echo "Usage: ./flac-to-alac -i infolder -o outfolder"
 }
