@@ -2,9 +2,13 @@
 #
 # Converts a folder of FLAC files to ALAC files with ffmpeg
 
-if [ "$lidarr_eventtype" = "Test" ]
-  exit 0
-end
+NQDIR="/tmp/flac-to-alac"
+LOG_FILE="/Users/mshick/Library/Logs/flac-to-alac/info.log"
+LIMIT=100
+
+log() {
+  echo "[$(date "+%Y.%m.%d %H:%M:%S")] $1" >> $LOG_FILE 2>&1
+}
 
 usage() { 
     echo "Usage: ./flac-to-alac -i infolder -o outfolder"
@@ -18,29 +22,37 @@ while getopts i:o: flag; do
     esac
 done
 
-if ((OPTIND == 1))
-then
+if [ -z ${input+x} ] || [ -z ${output+x} ]; then
     echo "Must specify input and output folders"
     usage
     exit 1
 fi
 
 convert() {
-    filename=$(basename $1)
+    log "Converting $1"
+    
+    filename=$(basename "$1")
     filename="${filename%.*}"
     
-    nq ffmpeg \
+    NQDIR=$NQDIR nq -q ffmpeg \
         -nostdin \
-        -i "${input}/$filename.flac" \
+        -i "$input/$filename.flac" \
         -c:v copy \
         -c:a alac \
         -movflags +faststart \
-        "${output}/$filename.m4a"
+        "$output/$filename.m4a"
 }
 
-find $input -name '*.flac' -print0 | 
-while IFS= read -r -d '' line; do 
-    convert "$line"
-done
+log "Starting conversion of $input"
 
-fq
+mkdir -p $NQDIR
+
+count=0
+
+find "$input" -name '*.flac' -print0 | 
+while IFS= read -r -d '' line; do
+    if [ "$count" -lt "$LIMIT" ]; then
+        convert "$line"
+        count=$((count + 1))
+    fi
+done
