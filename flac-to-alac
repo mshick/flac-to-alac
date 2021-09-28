@@ -43,7 +43,7 @@ convert() {
         "$output/$filename.m4a"
 }
 
-log "Starting conversion of $input"
+log "Checking path: $input"
 
 mkdir -p $NQDIR
 
