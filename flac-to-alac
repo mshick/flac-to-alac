@@ -3,11 +3,10 @@
 # Converts a folder of FLAC files to ALAC files with ffmpeg
 
 NQDIR="/tmp/flac-to-alac"
-LOG_FILE="/Users/mshick/Library/Logs/flac-to-alac/info.log"
 LIMIT=100
 
 log() {
-    echo "[$(date "+%Y.%m.%d %H:%M:%S")] $1" >> $LOG_FILE 2>&1
+    echo "[$(date "+%Y.%m.%d %H:%M:%S")] $1"
 }
 
 usage() { 
